@@ -1,0 +1,33 @@
+version: "3"
+services:
+  lucky_blog:
+    build:
+      context: .
+    container_name: blog
+    command: python manage.py runserver 0.0.0.0:8001
+    ports:
+    - 3000:8001
+    depends_on:
+      - distributor-db
+    env_file:
+      - .env
+    environment:
+      - DB_NAME=luckyblog_db
+      - DB_USER=jina
+      - DB_PASSWORD=123
+      - DB_PORT=5432
+      - DB_HOST=distributor-db
+  distributor-db:
+    image: postgres:12-alpine3.13
+    container_name: blog-data
+    environment:
+      - POSTGRES_USER=jina
+      - POSTGRES_PASSWORD=123
+      - POSTGRES_DB=luckyblog_db
+    ports:
+      - 5435:5432
+#    volumes:
+#      - distributor-postgres-data: /var/lib/postgresql/data
+volumes:
+  distributor-postgres-data:
+    driver: local
